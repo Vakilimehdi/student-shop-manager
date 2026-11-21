@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- پروژه دانشجویی: سیستم مدیریت فروشگاه — تک‌فایل، بدون نیاز به نصب، داده‌ها در localStorage ذخیره می‌شوند -->
+<title>سیستم مدیریت فروشگاه</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#f1f5f9; --card:#fff; --border:#e2e8f0; --text:#0f172a; --muted:#64748b;
+    --accent:#2563eb; --accent2:#059669; --danger:#dc2626; --warn:#d97706; --radius:12px}
+  *{box-sizing:border-box; margin:0; padding:0}
+  body{background:var(--bg); color:var(--text); font-family:'Vazirmatn',Tahoma,sans-serif; line-height:1.7}
+  .wrap{max-width:1020px; margin:0 auto; padding:0 16px}
+  header{background:var(--text); color:#fff; padding:22px 0}
+  header h1{font-size:22px}
+  header p{color:#cbd5e1; font-size:14px}
+  .stats{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin:20px 0}
+  .stat{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:16px}
+  .stat b{display:block; font-size:24px}
+  .stat span{font-size:13px; color:var(--muted)}
+  .tabs{display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap}
+  .tab{padding:9px 18px; border:1px solid var(--border); background:var(--card); border-radius:999px; cursor:pointer; font-family:inherit; font-size:14px}
+  .tab.active{background:var(--accent); color:#fff; border-color:var(--accent)}
+  .panel{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:20px; margin-bottom:20px}
+  .panel h2{font-size:18px; margin-bottom:14px}
+  table{width:100%; border-collapse:collapse; font-size:14px}
+  th,td{padding:10px 8px; border-bottom:1px solid var(--border); text-align:right}
+  th{background:#f8fafc}
+  .low{color:var(--danger); font-weight:700}
+  form{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px}
+  input,select{padding:9px 12px; border:1px solid var(--border); border-radius:8px; font-family:inherit; font-size:14px}
+  .btn{padding:9px 18px; border:none; border-radius:8px; cursor:pointer; font-family:inherit; font-size:14px; font-weight:700}
+  .btn-primary{background:var(--accent); color:#fff}
+  .btn-green{background:var(--accent2); color:#fff}
+  .btn-danger{background:var(--danger); color:#fff}
+  .btn-ghost{background:#fff; border:1px solid var(--border)}
+  .btn-sm{padding:5px 12px; font-size:13px}
+  .cart{margin-top:14px}
+  .total{font-size:18px; font-weight:800; margin:12px 0}
+  .bar-row{display:flex; align-items:center; gap:10px; margin:8px 0; font-size:14px}
+  .bar-label{width:130px}
+  .bar{height:18px; background:var(--accent); border-radius:6px; min-width:4px}
+  .muted{color:var(--muted); font-size:13px}
+  .invoice{border:2px solid var(--text); border-radius:var(--radius); padding:20px; margin-top:16px}
+  .invoice h3{text-align:center; margin-bottom:6px}
+  .actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px}
+  @media (max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}}
+  @media print{
+    body *{visibility:hidden}
+    #printArea, #printArea *{visibility:visible}
+    #printArea{position:absolute; inset:0; padding:20px}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>🛒 سیستم مدیریت فروشگاه</h1>
+    <p>پروژه دانشجویی — مدیریت کالا، فروش، فاکتور و گزارش | داده‌ها در مرورگر شما ذخیره می‌شود</p>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="stats">
+    <div class="stat"><b id="stProducts">۰</b><span>تعداد کالاها</span></div>
+    <div class="stat"><b id="stRevenue">۰</b><span>جمع فروش (تومان)</span></div>
+    <div class="stat"><b id="stInvoices">۰</b><span>تعداد فاکتورها</span></div>
+    <div class="stat"><b id="stLow">۰</b><span>کالای کم‌موجودی</span></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="products">📦 کالاها</button>
+    <button class="tab" data-tab="sale">🧾 فروش جدید</button>
+    <button class="tab" data-tab="invoices">📄 فاکتورها</button>
+    <button class="tab" data-tab="reports">📊 گزارش‌ها</button>
+  </div>
+
+  <!-- Products -->
+  <section class="panel" id="tab-products">
+    <h2>افزودن کالا</h2>
+    <form id="productForm">
+      <input id="pName" placeholder="نام کالا" required>
+      <input id="pCat" placeholder="دسته (مثلاً مواد غذایی)" required>
+      <input id="pPrice" type="number" min="0" placeholder="قیمت (تومان)" required>
+      <input id="pStock" type="number" min="0" placeholder="موجودی" required>
+      <button class="btn btn-primary" type="submit">➕ افزودن کالا</button>
+    </form>
+    <table>
+      <thead><tr><th>نام کالا</th><th>دسته</th><th>قیمت</th><th>موجودی</th><th></th></tr></thead>
+      <tbody id="productRows"></tbody>
+    </table>
+    <p class="muted">موجودی کمتر از ۵ با قرمز نشان داده می‌شود.</p>
+  </section>
+
+  <!-- New sale -->
+  <section class="panel" id="tab-sale" hidden>
+    <h2>ثبت فروش جدید</h2>
+    <form id="saleForm">
+      <input id="sCustomer" placeholder="نام مشتری" required>
+      <select id="sProduct"></select>
+      <input id="sQty" type="number" min="1" value="1" required>
+      <button class="btn btn-primary" type="submit">➕ افزودن به سبد</button>
+    </form>
+    <div class="cart">
+      <table>
+        <thead><tr><th>کالا</th><th>تعداد</th><th>قیمت واحد</th><th>جمع</th><th></th></tr></thead>
+        <tbody id="cartRows"></tbody>
+      </table>
+      <div class="total">جمع کل: <span id="cartTotal">۰</span> تومان</div>
+      <button class="btn btn-green" id="checkoutBtn">✅ ثبت فاکتور</button>
+    </div>
+    <div id="printArea"></div>
+  </section>
+
+  <!-- Invoices -->
+  <section class="panel" id="tab-invoices" hidden>
+    <h2>فاکتورهای ثبت‌شده</h2>
+    <table>
+      <thead><tr><th>شماره</th><th>تاریخ</th><th>مشتری</th><th>اقلام</th><th>جمع کل</th><th></th></tr></thead>
+      <tbody id="invoiceRows"></tbody>
+    </table>
+    <div class="actions">
+      <button class="btn btn-ghost" id="csvBtn">⬇️ دانلود گزارش فروش (CSV)</button>
+      <button class="btn btn-ghost" id="resetBtn">↺ برگرداندن داده‌های نمونه</button>
+    </div>
+  </section>
+
+  <!-- Reports -->
+  <section class="panel" id="tab-reports" hidden>
+    <h2>گزارش فروش</h2>
+    <p>پرفروش‌ترین کالاها (بر اساس تعداد فروش):</p>
+    <div id="topBars" style="margin-top:12px"></div>
+    <p class="muted" id="reportNote" style="margin-top:14px"></p>
+  </section>
+</div>
+
+<script>
+const KEY = 'shop.v1';
+const fa = n => Number(n).toLocaleString('fa-IR');
+const faDate = d => new Date(d).toLocaleDateString('fa-IR');
+
+const SEED_PRODUCTS = [
+  {id:1, name:'برنج هاشمی ۵ کیلویی', cat:'مواد غذایی', price:420000, stock:24},
+  {id:2, name:'روغن آفتابگردان ۱٫۵ لیتری', cat:'مواد غذایی', price:185000, stock:40},
+  {id:3, name:'چای سیاه ۵۰۰ گرمی', cat:'نوشیدنی', price:240000, stock:8},
+  {id:4, name:'شکر ۱ کیلویی', cat:'مواد غذایی', price:68000, stock:3},
+  {id:5, name:'مایع ظرفشویی', cat:'شوینده', price:95000, stock:15},
+  {id:6, name:'پودر لباسشویی ۳ کیلویی', cat:'شوینده', price:310000, stock:11},
+  {id:7, name:'بیسکویت کرم‌دار', cat:'تنقلات', price:45000, stock:60},
+  {id:8, name:'آب معدنی ۱٫۵ لیتری', cat:'نوشیدنی', price:18000, stock:120},
+];
+const SEED_INVOICES = [
+  {id:1001, date:'2026-11-20T10:24:00', customer:'احمد رضایی',
+   items:[{name:'برنج هاشمی ۵ کیلویی', qty:2, price:420000},{name:'چای سیاه ۵۰۰ گرمی', qty:1, price:240000}], total:1080000},
+  {id:1002, date:'2026-11-20T12:02:00', customer:'مریم کریمی',
+   items:[{name:'روغن آفتابگردان ۱٫۵ لیتری', qty:3, price:185000},{name:'بیسکویت کرم‌دار', qty:5, price:45000}], total:780000},
+];
+
+let db, cart = [];
+function load(){
+  try { db = JSON.parse(localStorage.getItem(KEY)); } catch(e){ db = null; }
+  if(!db || !db.products){ db = {products: SEED_PRODUCTS, invoices: SEED_INVOICES, nextId: 9, nextInv: 1003}; save(); }
+}
+function save(){ localStorage.setItem(KEY, JSON.stringify(db)); }
+
+function renderAll(){ renderStats(); renderProducts(); renderSaleSelect(); renderCart(); renderInvoices(); renderReports(); }
+function renderStats(){
+  const revenue = db.invoices.reduce((s,i)=>s+i.total,0);
+  document.getElementById('stProducts').textContent = fa(db.products.length);
+  document.getElementById('stRevenue').textContent = fa(revenue);
+  document.getElementById('stInvoices').textContent = fa(db.invoices.length);
+  document.getElementById('stLow').textContent = fa(db.products.filter(p=>p.stock<5).length);
+}
+function renderProducts(){
+  document.getElementById('productRows').innerHTML = db.products.map(p =>
+    `<tr><td>${p.name}</td><td>${p.cat}</td><td>${fa(p.price)}</td>` +
+    `<td class="${p.stock<5?'low':''}">${fa(p.stock)}</td>` +
+    `<td><button class="btn btn-danger btn-sm" onclick="delProduct(${p.id})">حذف</button></td></tr>`).join('');
+}
+function delProduct(id){
+  if(!confirm('این کالا حذف شود؟')) return;
+  db.products = db.products.filter(p=>p.id!==id); save(); renderAll();
+}
+function renderSaleSelect(){
+  document.getElementById('sProduct').innerHTML = db.products
+    .filter(p=>p.stock>0)
+    .map(p=>`<option value="${p.id}">${p.name} — ${fa(p.price)} تومان (موجودی ${fa(p.stock)})</option>`).join('');
+}
+function renderCart(){
+  document.getElementById('cartRows').innerHTML = cart.map((c,i) =>
+    `<tr><td>${c.name}</td><td>${fa(c.qty)}</td><td>${fa(c.price)}</td><td>${fa(c.qty*c.price)}</td>` +
+    `<td><button class="btn btn-danger btn-sm" onclick="cart.splice(${i},1);renderCart()">حذف</button></td></tr>`).join('');
+  document.getElementById('cartTotal').textContent = fa(cart.reduce((s,c)=>s+c.qty*c.price,0));
+}
+function renderInvoices(){
+  document.getElementById('invoiceRows').innerHTML = db.invoices.map(inv =>
+    `<tr><td>${fa(inv.id)}</td><td>${faDate(inv.date)}</td><td>${inv.customer}</td>` +
+    `<td>${inv.items.map(i=>i.name+' × '+fa(i.qty)).join('، ')}</td><td>${fa(inv.total)}</td>` +
+    `<td><button class="btn btn-ghost btn-sm" onclick="showInvoice(${inv.id})">مشاهده</button></td></tr>`).join('') ||
+    '<tr><td colspan="6" class="muted">هنوز فاکتوری ثبت نشده است.</td></tr>';
+}
+function renderReports(){
+  const sold = {};
+  db.invoices.forEach(inv => inv.items.forEach(it => sold[it.name]=(sold[it.name]||0)+it.qty));
+  const top = Object.entries(sold).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const max = top.length ? top[0][1] : 1;
+  document.getElementById('topBars').innerHTML = top.map(([name,qty]) =>
+    `<div class="bar-row"><span class="bar-label">${name}</span>` +
+    `<div class="bar" style="width:${Math.round(qty/max*100)}%"></div><span>${fa(qty)} عدد</span></div>`).join('') ||
+    '<p class="muted">داده‌ای برای نمایش نیست.</p>';
+  const totalItems = Object.values(sold).reduce((s,n)=>s+n,0);
+  document.getElementById('reportNote').textContent =
+    `جمع اقلام فروخته‌شده: ${fa(totalItems)} عدد در ${fa(db.invoices.length)} فاکتور.`;
+}
+
+document.getElementById('productForm').addEventListener('submit', e => {
+  e.preventDefault();
+  db.products.push({id: db.nextId++, name: pName.value.trim(), cat: pCat.value.trim(),
+    price: +pPrice.value, stock: +pStock.value});
+  save(); renderAll(); e.target.reset();
+});
+document.getElementById('saleForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const p = db.products.find(x=>x.id===+sProduct.value);
+  const qty = +sQty.value;
+  if(!p || qty<1 || qty>p.stock){ alert('موجودی کافی نیست.'); return; }
+  const line = cart.find(c=>c.id===p.id);
+  if(line){ if(line.qty+qty>p.stock){ alert('موجودی کافی نیست.'); return; } line.qty+=qty; }
+  else cart.push({id:p.id, name:p.name, price:p.price, qty});
+  renderCart();
+});
+document.getElementById('checkoutBtn').addEventListener('click', () => {
+  if(!cart.length){ alert('سبد خرید خالی است.'); return; }
+  const customer = sCustomer.value.trim();
+  if(!customer){ alert('نام مشتری را وارد کنید.'); return; }
+  const total = cart.reduce((s,c)=>s+c.qty*c.price,0);
+  const inv = {id: db.nextInv++, date: new Date().toISOString(), customer,
+    items: cart.map(c=>({name:c.name, qty:c.qty, price:c.price})), total};
+  cart.forEach(c => { db.products.find(p=>p.id===c.id).stock -= c.qty; });
+  db.invoices.push(inv); save(); cart = [];
+  renderAll(); showInvoice(inv.id);
+});
+function showInvoice(id){
+  const inv = db.invoices.find(i=>i.id===id);
+  if(!inv) return;
+  document.getElementById('printArea').innerHTML =
+    `<div class="invoice"><h3>فاکتور فروش — فروشگاه نمونه</h3>` +
+    `<p>شماره فاکتور: ${fa(inv.id)} &nbsp;|&nbsp; تاریخ: ${faDate(inv.date)} &nbsp;|&nbsp; مشتری: ${inv.customer}</p>` +
+    `<table><thead><tr><th>کالا</th><th>تعداد</th><th>قیمت واحد</th><th>جمع</th></tr></thead><tbody>` +
+    inv.items.map(it=>`<tr><td>${it.name}</td><td>${fa(it.qty)}</td><td>${fa(it.price)}</td><td>${fa(it.qty*it.price)}</td></tr>`).join('') +
+    `</tbody></table><p class="total">جمع کل: ${fa(inv.total)} تومان</p>` +
+    `<div class="actions"><button class="btn btn-primary" onclick="window.print()">🖨️ چاپ فاکتور</button></div></div>`;
+  document.getElementById('printArea').scrollIntoView({behavior:'smooth'});
+}
+document.getElementById('csvBtn').addEventListener('click', () => {
+  const rows = [['invoice','date','customer','item','qty','unit_price','line_total']];
+  db.invoices.forEach(inv => inv.items.forEach(it =>
+    rows.push([inv.id, inv.date.slice(0,10), inv.customer, it.name, it.qty, it.price, it.qty*it.price])));
+  const csv = rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(["\ufeff"+csv], {type:'text/csv'}));
+  a.download = 'sales-report.csv'; a.click();
+});
+document.getElementById('resetBtn').addEventListener('click', () => {
+  if(!confirm('داده‌ها به حالت نمونه برگردد؟')) return;
+  db = {products: SEED_PRODUCTS, invoices: SEED_INVOICES, nextId: 9, nextInv: 1003};
+  save(); renderAll();
+});
+document.querySelectorAll('.tab').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  ['products','sale','invoices','reports'].forEach(t =>
+    document.getElementById('tab-'+t).hidden = (t!==btn.dataset.tab));
+}));
+
+load(); renderAll();
+</script>
+</body>
+</html>
