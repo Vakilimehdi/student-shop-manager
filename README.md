@@ -4,7 +4,9 @@
 
 پروژهٔ دانشجویی آماده: یک سیستم مدیریت فروشگاه کامل در **یک فایل HTML** — بدون نیاز به نصب، بدون سرور و بدون پایگاه‌داده. فقط فایل را در مرورگر باز کنید.
 
-### امکانات
+> **نسخهٔ نمایشی (دمو):** فایلی که در این ریپو می‌بینید نسخهٔ دموی برنامه است — می‌توانید کالا اضافه کنید و یک فاکتور آزمایشی ثبت کنید تا ببینید به کارتان می‌آید یا نه؛ دانلود CSV در دمو غیرفعال است. نسخهٔ کامل (بدون محدودیت، بدون بنر دمو) فقط بعد از پرداخت ارسال می‌شود.
+
+### امکانات نسخهٔ کامل
 
 - **مدیریت کالاها:** افزودن و حذف کالا با نام، دسته، قیمت و موجودی؛ کالاهای کم‌موجودی (کمتر از ۵) با قرمز مشخص می‌شوند
 - **ثبت فروش:** انتخاب مشتری و کالا، سبد خرید، کنترل موجودی (نمی‌گذارد بیشتر از موجودی بفروشید)، ثبت فاکتور با شمارهٔ خودکار
@@ -28,7 +30,11 @@
 
 ### قیمت و خرید
 
-**۱۰ دلار** — پرداخت با USDT / USDC / SOL. برای خرید در ایکس به [@mehdivakili060](https://x.com/mehdivakili060) پیام بدهید.
+**۱۰ دلار** — نسخهٔ کامل را این‌طور بخرید:
+
+1. مبلغ را به کیف پول سولانا واریز کنید: `HqxvhpdWdBvjk1JvCwLdrp3fW47Zt1A8Eg1atDwZ3oQQ` (USDC یا USDT یا SOL در شبکهٔ سولانا)
+2. هش تراکنش و ایمیلت را در ایکس به [@mehdivakili060](https://x.com/mehdivakili060) بفرستید
+3. نسخهٔ کامل را تا ۲۴ ساعت بعد با ایمیل دریافت می‌کنید
 
 ---
 
@@ -36,7 +42,9 @@
 
 A ready-made student project: a complete shop management system in **a single HTML file** — no installation, no server, no database. Just open the file in a browser.
 
-### Features
+> **Demo version:** the file in this repo is the demo of the app — you can add products and record one trial invoice to see if it fits your needs; CSV download is disabled in the demo. The full version (unlimited, no demo banner) is sent only after payment.
+
+### Full version features
 
 - **Product management:** add and delete products with name, category, price and stock; low-stock items (under 5) are highlighted in red
 - **New sale:** pick a customer and products, a shopping cart, stock control (it won't let you sell more than in stock), invoices with automatic numbering
@@ -60,7 +68,11 @@ The code is simple and readable: data in `SEED_PRODUCTS` and `SEED_INVOICES`, `r
 
 ### Price & purchase
 
-**$10** — pay with USDT / USDC / SOL. To buy, message [@mehdivakili060](https://x.com/mehdivakili060) on X.
+**$10** — buy the full version like this:
+
+1. Pay to the Solana wallet: `HqxvhpdWdBvjk1JvCwLdrp3fW47Zt1A8Eg1atDwZ3oQQ` (USDC, USDT or SOL on Solana)
+2. Send the transaction ID and your email to [@mehdivakili060](https://x.com/mehdivakili060) on X
+3. You will receive the full version by email within 24 hours
 
 ## License
 

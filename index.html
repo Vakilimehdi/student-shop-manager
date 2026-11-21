@@ -45,6 +45,7 @@
   .invoice{border:2px solid var(--text); border-radius:var(--radius); padding:20px; margin-top:16px}
   .invoice h3{text-align:center; margin-bottom:6px}
   .actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px}
+  .demo-banner{background:#f59e0b; color:#1a1005; text-align:center; padding:9px 16px; font-weight:700; font-size:14px}
   @media (max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}}
   @media print{
     body *{visibility:hidden}
@@ -54,10 +55,11 @@
 </style>
 </head>
 <body>
+<div class="demo-banner">نسخهٔ نمایشی (دمو) — در این نسخه فقط یک فاکتور آزمایشی می‌توانید ثبت کنید و دانلود CSV غیرفعال است. نسخهٔ کامل را بخرید.</div>
 <header>
   <div class="wrap">
     <h1>🛒 سیستم مدیریت فروشگاه</h1>
-    <p>پروژه دانشجویی — مدیریت کالا، فروش، فاکتور و گزارش | داده‌ها در مرورگر شما ذخیره می‌شود</p>
+    <p>پروژه دانشجویی — نسخهٔ نمایشی | مدیریت کالا، فروش، فاکتور و گزارش</p>
   </div>
 </header>
 
@@ -232,6 +234,7 @@ document.getElementById('saleForm').addEventListener('submit', e => {
 });
 document.getElementById('checkoutBtn').addEventListener('click', () => {
   if(!cart.length){ alert('سبد خرید خالی است.'); return; }
+  if(db.invoices.length >= 3){ alert('نسخهٔ نمایشی: فقط یک فاکتور آزمایشی می‌توانید ثبت کنید. برای استفادهٔ نامحدود، نسخهٔ کامل را بخرید.'); return; }
   const customer = sCustomer.value.trim();
   if(!customer){ alert('نام مشتری را وارد کنید.'); return; }
   const total = cart.reduce((s,c)=>s+c.qty*c.price,0);
@@ -254,6 +257,7 @@ function showInvoice(id){
   document.getElementById('printArea').scrollIntoView({behavior:'smooth'});
 }
 document.getElementById('csvBtn').addEventListener('click', () => {
+  alert('دانلود CSV در نسخهٔ کامل فعال است. برای خرید، توضیحات ریپو را ببینید.'); return;
   const rows = [['invoice','date','customer','item','qty','unit_price','line_total']];
   db.invoices.forEach(inv => inv.items.forEach(it =>
     rows.push([inv.id, inv.date.slice(0,10), inv.customer, it.name, it.qty, it.price, it.qty*it.price])));
