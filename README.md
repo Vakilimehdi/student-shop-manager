@@ -32,7 +32,7 @@
 
 **۱۰ دلار** — نسخهٔ کامل را از فروشگاه بخرید:
 
-https://github.com/Vakilimehdi/crypto-pay-page
+https://vakilimehdi.github.io/crypto-pay-page/
 
 1. مبلغ دقیق را با **USDC در شبکهٔ سولانا** به این کیف پول بفرستید: `HqxvhpdWdBvjk1JvCwLdrp3fW47Zt1A8Eg1atDwZ3oQQ`
 2. امضای تراکنش و کد محصول (`student-shop`) را به **mehdivakili0@gmail.com** ایمیل کنید
@@ -72,7 +72,7 @@ The code is simple and readable: data in `SEED_PRODUCTS` and `SEED_INVOICES`, `r
 
 **$10** — buy the full version from the store:
 
-https://github.com/Vakilimehdi/crypto-pay-page
+https://vakilimehdi.github.io/crypto-pay-page/
 
 1. Pay the exact price in **USDC on Solana** to: `HqxvhpdWdBvjk1JvCwLdrp3fW47Zt1A8Eg1atDwZ3oQQ`
 2. Email the transaction signature and product code (`student-shop`) to **mehdivakili0@gmail.com**
